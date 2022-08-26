@@ -20,10 +20,10 @@
                     <VisualState.Setters>
                         <Setter Target="VerticalGridSplitter.Visibility" Value="Collapsed"/>
                         <Setter Target="HorizontalGridSplitter.Visibility" Value="Visible"/>
-                        <Setter Target="Base64TextEditor.(Grid.Row)" Value="0" />
-                        <Setter Target="Base64TextEditor.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="Base64TextEditor.(Grid.Column)" Value="0" />
-                        <Setter Target="Base64TextEditor.(Grid.ColumnSpan)" Value="3" />
+                        <Setter Target="TextTextEditor.(Grid.Row)" Value="0" />
+                        <Setter Target="TextTextEditor.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="TextTextEditor.(Grid.Column)" Value="0" />
+                        <Setter Target="TextTextEditor.(Grid.ColumnSpan)" Value="3" />
                         <Setter Target="ImageRelativePanel.(Grid.Row)" Value="2" />
                         <Setter Target="ImageRelativePanel.(Grid.RowSpan)" Value="1" />
                         <Setter Target="ImageRelativePanel.(Grid.Column)" Value="0" />
@@ -62,15 +62,15 @@
         </Grid.RowDefinitions>
 
         <controls:CodeEditor
-            x:Name="Base64TextEditor"
+            x:Name="TextEditor"
             Grid.Column="0"
             Grid.Row="0"
             Grid.RowSpan="3"
             MinHeight="150"
             CanCopyWhenNotReadOnly="True"
-            Header="{x:Bind ViewModel.Strings.Base64InputTitle}"
+            Header="{x:Bind ViewModel.Strings.TextInputTitle}"
             SettingsProvider="{x:Bind ViewModel.MockSettingsProvider}"
-            Text="{x:Bind ViewModel.Base64Data, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            Text="{x:Bind ViewModel.TextData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             CodeLanguage="text"/>
 
         <toolkit:GridSplitter

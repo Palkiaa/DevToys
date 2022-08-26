@@ -176,7 +176,7 @@
     <Compile Include="Views\Tools\EncodersDecoders\GZipEncoderDecoder\GZipEncoderDecoderToolPage.xaml.cs">
       <DependentUpon>GZipEncoderDecoderToolPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Tools\EncodersDecoders\TextQRCodeEncoderDecoder\QRCodeEncoderDecoderToolPage.xaml.cs">
+    <Compile Include="Views\Tools\EncodersDecoders\QRCodeEncoderDecoder\QRCodeEncoderDecoderToolPage.xaml.cs">
       <DependentUpon>QRCodeEncoderDecoderToolPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Tools\Formatters\XmlFormatter\XmlFormatterToolPage.xaml.cs">
@@ -559,7 +559,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Page Include="Views\Tools\EncodersDecoders\TextQRCodeEncoderDecoder\QRCodeEncoderDecoderToolPage.xaml">
+    <Page Include="Views\Tools\EncodersDecoders\QRCodeEncoderDecoder\QRCodeEncoderDecoderToolPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

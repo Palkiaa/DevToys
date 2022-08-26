@@ -43,7 +43,7 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
         private readonly IMarketingService _marketingService;
 
         private CancellationTokenSource? _cancellationTokenSource;
-        private string? _base64Data;
+        private string? _textData;
         private StorageFile? _imageFile;
         private bool _ignoreTextDataChange;
 
@@ -55,16 +55,16 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
 
         internal string? TextData
         {
-            get => _base64Data;
+            get => _textData;
             set
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
-                if (value != _base64Data)
+                if (value != _textData)
                 {
-                    SetProperty(ref _base64Data, value);
+                    SetProperty(ref _textData, value);
                     if (!_ignoreTextDataChange)
                     {
-                        QueueNewConversionFromBase64ToImage(_base64Data);
+                        QueueNewConversionFromBase64ToImage(_textData);
                     }
                 }
             }

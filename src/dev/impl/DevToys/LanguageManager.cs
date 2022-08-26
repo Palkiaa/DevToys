@@ -2122,7 +2122,7 @@ namespace DevToys
         /// <summary>
         /// Gets the resource Base64InputTitle.
         /// </summary>
-        public string Base64InputTitle => _resources.GetString("Base64InputTitle");
+        public string TextInputTitle => _resources.GetString("TextInputTitle");
 
         /// <summary>
         /// Gets the resource Description.

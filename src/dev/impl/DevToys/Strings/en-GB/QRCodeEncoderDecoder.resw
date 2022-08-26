@@ -123,7 +123,7 @@
   <data name="MenuDisplayName" xml:space="preserve">
     <value>QR Code</value>
   </data>
-  <data name="Base64InputTitle" xml:space="preserve">
+  <data name="TextInputTitle" xml:space="preserve">
     <value>Text</value>
   </data>
   <data name="ImageInputTitle" xml:space="preserve">

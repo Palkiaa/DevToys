@@ -120,9 +120,6 @@
   <data name="AccessibleName" xml:space="preserve">
     <value>QR Code Encoder and Decoder tool</value>
   </data>
-  <data name="Base64InputTitle" xml:space="preserve">
-    <value>Text</value>
-  </data>
   <data name="Description" xml:space="preserve">
     <value>Encode and decode QR codes</value>
   </data>
@@ -138,5 +135,8 @@
   <data name="SearchKeywords" xml:space="preserve">
     <value>RFC 4648</value>
     <comment>Alternative search keywords. Enables searching for words that are not included in Description, MenuDisplayName, and SearchDisplayName.</comment>
+  </data>
+  <data name="TextInputTitle" xml:space="preserve">
+    <value>Text</value>
   </data>
 </root>
