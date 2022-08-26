@@ -559,7 +559,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <PRIResource Include="Strings\af-ZA\QRCodeEncoderDecoder.resw" />
     <Page Include="Views\Tools\EncodersDecoders\TextQRCodeEncoderDecoder\QRCodeEncoderDecoderToolPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

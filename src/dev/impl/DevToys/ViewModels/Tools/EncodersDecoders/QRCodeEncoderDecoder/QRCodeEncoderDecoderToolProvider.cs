@@ -12,8 +12,8 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
     [Export(typeof(IToolProvider))]
     [Name("QR Code Encoder/Decoder")]
     [Parent(EncodersDecodersGroupToolProvider.InternalName)]
-    [ProtocolName("base64img")]
-    [Order(2)]
+    [ProtocolName("qrcode")]
+    [Order(1)]
     internal sealed class QRCodeEncoderDecoderToolProvider : IToolProvider
     {
         public string MenuDisplayName => LanguageManager.Instance.QRCodeEncoderDecoder.MenuDisplayName;
