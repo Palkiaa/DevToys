@@ -17,8 +17,10 @@ using DevToys.Shared.Core.Threading;
 using DevToys.Views.Tools.QRCodeEncoderDecoder;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
+using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using ZXing;
 
 namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
 {
@@ -43,7 +45,7 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
         private CancellationTokenSource? _cancellationTokenSource;
         private string? _base64Data;
         private StorageFile? _imageFile;
-        private bool _ignoreBase64DataChange;
+        private bool _ignoreTextDataChange;
 
         public Type View { get; } = typeof(QRCodeEncoderDecoderToolPage);
 
@@ -51,7 +53,7 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
 
         internal MockSettingsProvider MockSettingsProvider { get; }
 
-        internal string? Base64Data
+        internal string? TextData
         {
             get => _base64Data;
             set
@@ -60,7 +62,7 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
                 if (value != _base64Data)
                 {
                     SetProperty(ref _base64Data, value);
-                    if (!_ignoreBase64DataChange)
+                    if (!_ignoreTextDataChange)
                     {
                         QueueNewConversionFromBase64ToImage(_base64Data);
                     }
@@ -123,7 +125,7 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
             SetImageDataAsync(file)
                 .ContinueWith(_ =>
                 {
-                    ConvertFromImageToBase64Async(file, cancellationToken).Forget();
+                    ConvertFromImageToTextAsync(file, cancellationToken).Forget();
                 });
         }
 
@@ -208,38 +210,31 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
             await SetImageDataAsync(storageFile);
         }
 
-        private async Task ConvertFromImageToBase64Async(StorageFile file, CancellationToken cancellationToken)
+        private async Task ConvertFromImageToTextAsync(StorageFile file, CancellationToken cancellationToken)
         {
             await TaskScheduler.Default;
 
             using var memStream = new MemoryStream();
-            using Stream stream = await file.OpenStreamForReadAsync();
+            using IRandomAccessStreamWithContentType? stream = await file.OpenReadAsync();
 
-            await stream.CopyToAsync(memStream);
+            var barcodeReader = new BarcodeReader();
+            BitmapDecoder bitmapDecoder = await BitmapDecoder.CreateAsync(stream);
 
-            byte[] bytes = memStream.ToArray();
-            string base64 = Convert.ToBase64String(bytes);
+            using SoftwareBitmap? softwareBitmap = await bitmapDecoder.GetSoftwareBitmapAsync();
 
-            if (cancellationToken.IsCancellationRequested)
+            if (softwareBitmap == null)
             {
                 return;
             }
 
-            string fileExtension = file.FileType;
-            string output
-                = fileExtension.ToLowerInvariant() switch
-                {
-                    ".png" => "data:image/png;base64," + base64,
-                    ".jpg" or ".jpeg" => "data:image/jpeg;base64," + base64,
-                    ".bmp" => "data:image/bmp;base64," + base64,
-                    ".gif" => "data:image/gif;base64," + base64,
-                    ".ico" => "data:image/x-icon;base64," + base64,
-                    ".svg" => "data:image/svg+xml;base64," + base64,
-                    ".webp" => "data:image/webp;base64," + base64,
-                    _ => throw new NotSupportedException(),
-                };
+            Result? result = barcodeReader.Decode(softwareBitmap);
 
-            await SetBase64DataAsync(output);
+            if (cancellationToken.IsCancellationRequested || result == null)
+            {
+                return;
+            }
+
+            await SetTextAsync(result.Text);
         }
 
         private async Task SetImageDataAsync(StorageFile? file)
@@ -250,13 +245,13 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
             });
         }
 
-        private async Task SetBase64DataAsync(string base64)
+        private async Task SetTextAsync(string text)
         {
             await ThreadHelper.RunOnUIThreadAsync(() =>
             {
-                _ignoreBase64DataChange = true;
-                Base64Data = base64;
-                _ignoreBase64DataChange = false;
+                _ignoreTextDataChange = true;
+                TextData = text;
+                _ignoreTextDataChange = false;
             });
         }
 

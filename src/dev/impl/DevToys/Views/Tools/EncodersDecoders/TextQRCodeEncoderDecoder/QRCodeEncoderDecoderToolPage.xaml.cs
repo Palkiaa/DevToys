@@ -46,7 +46,7 @@ namespace DevToys.Views.Tools.QRCodeEncoderDecoder
 
             if (!string.IsNullOrWhiteSpace(parameters.ClipBoardContent))
             {
-                ViewModel.Base64Data = parameters.ClipBoardContent;
+                ViewModel.TextData = parameters.ClipBoardContent;
             }
 
             base.OnNavigatedTo(e);
