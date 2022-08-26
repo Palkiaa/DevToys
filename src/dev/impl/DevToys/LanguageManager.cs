@@ -27,6 +27,7 @@ namespace DevToys
         private readonly AllToolsStrings _alltools = new AllToolsStrings();
         private readonly Base64EncoderDecoderStrings _base64encoderdecoder = new Base64EncoderDecoderStrings();
         private readonly Base64ImageEncoderDecoderStrings _base64imageencoderdecoder = new Base64ImageEncoderDecoderStrings();
+        private readonly QRCodeEncoderDecoderStrings _qrcodeencoderdecoder = new QRCodeEncoderDecoderStrings();
         private readonly CheckSumGeneratorStrings _checksumgenerator = new CheckSumGeneratorStrings();
         private readonly ColorBlindnessSimulatorStrings _colorblindnesssimulator = new ColorBlindnessSimulatorStrings();
         private readonly ColorPickerStrings _colorpicker = new ColorPickerStrings();
@@ -82,6 +83,11 @@ namespace DevToys
         /// Gets the <see cref="Base64ImageEncoderDecoderStrings"/>.
         /// </summary>
         public Base64ImageEncoderDecoderStrings Base64ImageEncoderDecoder => _base64imageencoderdecoder;
+
+        /// <summary>
+        /// Gets the <see cref="Base64ImageEncoderDecoderStrings"/>.
+        /// </summary>
+        public QRCodeEncoderDecoderStrings QRCodeEncoderDecoder => _qrcodeencoderdecoder;
 
         /// <summary>
         /// Gets the <see cref="CheckSumGeneratorStrings"/>.
@@ -383,6 +389,46 @@ namespace DevToys
     public class Base64ImageEncoderDecoderStrings : ObservableObject
     {
         private readonly ResourceLoader _resources = ResourceLoader.GetForViewIndependentUse("Base64ImageEncoderDecoder");
+
+        /// <summary>
+        /// Gets the resource AccessibleName.
+        /// </summary>
+        public string AccessibleName => _resources.GetString("AccessibleName");
+
+        /// <summary>
+        /// Gets the resource MenuDisplayName.
+        /// </summary>
+        public string MenuDisplayName => _resources.GetString("MenuDisplayName");
+
+        /// <summary>
+        /// Gets the resource Base64InputTitle.
+        /// </summary>
+        public string Base64InputTitle => _resources.GetString("Base64InputTitle");
+
+        /// <summary>
+        /// Gets the resource ImageInputTitle.
+        /// </summary>
+        public string ImageInputTitle => _resources.GetString("ImageInputTitle");
+
+        /// <summary>
+        /// Gets the resource Description.
+        /// </summary>
+        public string Description => _resources.GetString("Description");
+
+        /// <summary>
+        /// Gets the resource SearchDisplayName.
+        /// </summary>
+        public string SearchDisplayName => _resources.GetString("SearchDisplayName");
+
+        /// <summary>
+        /// Gets the resource SearchKeywords.
+        /// </summary>
+        public string SearchKeywords => _resources.GetString("SearchKeywords");
+    }
+
+    public class QRCodeEncoderDecoderStrings : ObservableObject
+    {
+        private readonly ResourceLoader _resources = ResourceLoader.GetForViewIndependentUse("QRCodeEncoderDecoder");
 
         /// <summary>
         /// Gets the resource AccessibleName.
