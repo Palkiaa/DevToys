@@ -756,6 +756,9 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(NuGet_IdentityModelTokenJwt)" />
     <PackageReference Include="YamlDotNet" Version="$(NuGet_YamlDotNet)" />
     <PackageReference Include="Win2D.uwp" Version="$(Nuget_Win2D)" />
+    <PackageReference Include="ZXing.Net">
+      <Version>0.16.8</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
