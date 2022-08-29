@@ -20,7 +20,10 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml.Media.Imaging;
 using ZXing;
+using ZXing.Common;
+using ZXing.QrCode.Internal;
 
 namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
 {
@@ -64,7 +67,7 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
                     SetProperty(ref _textData, value);
                     if (!_ignoreTextDataChange)
                     {
-                        QueueNewConversionFromBase64ToImage(_textData);
+                        QueueNewConversionFromTextToImage(_textData);
                     }
                 }
             }
@@ -108,13 +111,13 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
             if (files is not null)
             {
                 Debug.Assert(files.Length == 1);
-                QueueNewConversionFromImageToBase64(files[0]);
+                QueueNewConversionFromImageToText(files[0]);
             }
         }
 
         #endregion
 
-        private void QueueNewConversionFromImageToBase64(StorageFile file)
+        private void QueueNewConversionFromImageToText(StorageFile file)
         {
             _cancellationTokenSource?.Cancel();
             _cancellationTokenSource?.Dispose();
@@ -129,7 +132,7 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
                 });
         }
 
-        private void QueueNewConversionFromBase64ToImage(string? base64)
+        private void QueueNewConversionFromTextToImage(string? text)
         {
             _cancellationTokenSource?.Cancel();
             _cancellationTokenSource?.Dispose();
@@ -138,68 +141,75 @@ namespace DevToys.ViewModels.Tools.QRCodeEncoderDecoder
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             SetImageDataAsync(null)
-                .ContinueWith(_ =>
-                {
-                    ConvertFromBase64ToImageAsync(base64, cancellationToken).Forget();
-                });
+                    .ContinueWith(_ =>
+                    {
+                        ConvertFromTextToImageAsync(text, cancellationToken).Forget();
+                    });
         }
 
-        private async Task ConvertFromBase64ToImageAsync(string? base64, CancellationToken cancellationToken)
+
+        private async Task ConvertFromTextToImageAsync(string? text, CancellationToken cancellationToken)
         {
             await TaskScheduler.Default;
 
-            string? trimmedData = base64?.Trim();
+            string? trimmedData = text?.Trim();
 
             if (string.IsNullOrWhiteSpace(trimmedData))
             {
                 return;
             }
 
-            string fileType;
-            if (trimmedData!.StartsWith("data:image/png;base64,", StringComparison.OrdinalIgnoreCase))
-            {
-                fileType = ".png";
-            }
-            else if (trimmedData!.StartsWith("data:image/jpeg;base64,", StringComparison.OrdinalIgnoreCase))
-            {
-                fileType = ".jpeg";
-            }
-            else if (trimmedData!.StartsWith("data:image/bmp;base64,", StringComparison.OrdinalIgnoreCase))
-            {
-                fileType = ".bmp";
-            }
-            else if (trimmedData!.StartsWith("data:image/gif;base64,", StringComparison.OrdinalIgnoreCase))
-            {
-                fileType = ".gif";
-            }
-            else if (trimmedData!.StartsWith("data:image/x-icon;base64,", StringComparison.OrdinalIgnoreCase))
-            {
-                fileType = ".ico";
-            }
-            else if (trimmedData!.StartsWith("data:image/svg+xml;base64,", StringComparison.OrdinalIgnoreCase))
-            {
-                fileType = ".svg";
-            }
-            else if (trimmedData!.StartsWith("data:image/webp;base64,", StringComparison.OrdinalIgnoreCase))
-            {
-                fileType = ".webp";
-            }
-            else
+            await Task.Delay(500);
+            if (cancellationToken.IsCancellationRequested)
             {
                 return;
             }
 
-            base64 = trimmedData.Substring(trimmedData.IndexOf(',') + 1);
-            byte[] bytes = Convert.FromBase64String(base64);
+            WriteableBitmap? result = null;
+            await ThreadHelper.RunOnUIThreadAsync(() =>
+            {
+                var barcodeWriter = new BarcodeWriter() { Format = BarcodeFormat.QR_CODE };
+                var encodingOptions = new EncodingOptions()
+                {
+                    Width = 600,
+                    Height = 600,
+                    Margin = 0,
+                    PureBarcode = true
+                };
+                encodingOptions.Hints.Add(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+                barcodeWriter.Options = encodingOptions;
 
+                result = barcodeWriter.Write(trimmedData);
+            });
+            if (result == null)
+            {
+                return;
+            }
+
+            string fileType = ".png";
             StorageFolder localCacheFolder = ApplicationData.Current.LocalCacheFolder;
-            StorageFile storageFile = await localCacheFolder.CreateFileAsync($"{Guid.NewGuid()}{fileType}", CreationCollisionOption.ReplaceExisting);
+            StorageFile storageFile = await localCacheFolder.CreateFileAsync($"qr_code{fileType}", CreationCollisionOption.ReplaceExisting);
 
             _tempFileNames.Add(storageFile.Path);
 
             using (IRandomAccessStream stream = await storageFile.OpenAsync(FileAccessMode.ReadWrite))
             {
-                await stream.WriteAsync(bytes.AsBuffer());
+                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+
+                await ThreadHelper.RunOnUIThreadAsync(() =>
+                {
+                    Stream pixelStream = result.PixelBuffer.AsStream();
+                    byte[] pixels = new byte[pixelStream.Length];
+                    pixelStream.Read(pixels, 0, pixels.Length);
+
+                    encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, (uint)result.PixelWidth, (uint)result.PixelHeight,
+                        96.0,
+                        96.0,
+                        pixels);
+
+                });
+
+                await encoder.FlushAsync();
             }
 
             if (cancellationToken.IsCancellationRequested)
